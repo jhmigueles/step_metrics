@@ -1,0 +1,1 @@
+At the moment the function only works with ".csv" files with timestamp, epoch = 60 s and no header.
