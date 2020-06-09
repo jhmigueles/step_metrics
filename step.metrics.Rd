@@ -11,7 +11,9 @@ moderate and vigorous PA threshold based on steps/min.
 step.metrics(datadir, outputdir="./",
              timestamp_colname = "timestamp", 
              steps_colname = "steps",
-             th.MOD=100, th.VIG=130)
+             th.MOD=100, th.VIG=130,
+             includedaycrit = 10,
+             exclude_pk30_0 = TRUE, exclude_pk60_0 = TRUE)
 }
 \arguments{
   \item{datadir}{
@@ -38,6 +40,15 @@ step.metrics(datadir, outputdir="./",
   \item{th.VIG}{
   Threshold for vigorous PA (in steps/min)
   }
+  \item{includedaycrit}{
+  Minimum number of hours recorded to consider a valid day (default = 10)
+  }
+  \item{exclude_pk30_0}{
+  Boolean. Whether or not to exclude those days in which the peak 30 block contains any zero (default = TRUE)
+  }
+  \item{exclude_pk60_0}{
+  Boolean. Whether or not to exclude those days in which the peak 30 block contains any zero (default = TRUE)
+  }
 }
 \details{
  Threshold for moderate and vigorous PA are 100 and 130 steps/min, respectively.
@@ -51,10 +62,7 @@ step.metrics(datadir, outputdir="./",
 \dontrun{
 datafile = "C:/myfolder/mydata"
 outputdir = "C:/myresults"
-step.metrics(datadir, outputdir,
-             timestamp_colname = "timestamp", 
-             steps_colname = "steps",
-             th.MOD=100, th.VIG=130)
+step.metrics(datadir, outputdir)
 }
 }
 \author{
