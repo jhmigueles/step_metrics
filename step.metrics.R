@@ -2,10 +2,17 @@ step.metrics = function(datadir, outputdir="./",
                         timestamp_colname = "timestamp", steps_colname = "steps",
                         th.MOD=100, th.VIG=130, 
                         includedaycrit = 10,
-                        exclude_pk30_0 = TRUE,
-                        exclude_pk60_0 = TRUE){
+                        exclude_pk30_0 = FALSE,
+                        exclude_pk60_0 = FALSE){
   
   print("Calculating features per day")
+  
+  # Functions
+  chartime2iso8601 = function(x,tz = ""){
+    POStime = as.POSIXlt(as.numeric(as.POSIXlt(x,tz)),origin="1970-1-1",tz)
+    POStimeISO = strftime(POStime,format="%Y-%m-%dT%H:%M:%S%z")
+    return(POStimeISO)
+  }
   
   #Names of the data files
   files = dir(datadir, pattern = "*.csv")
@@ -15,7 +22,8 @@ step.metrics = function(datadir, outputdir="./",
   #Loop through the files
   for (i in 1:length(files)) {
     S=read.csv(paste0(datadir, "/", files[i]))
-    t = unclass(as.POSIXlt(S[,time]))
+    t = chartime2iso8601(S$timestamp)
+    t = unclass(as.POSIXlt(t, format="%Y-%m-%dT%H:%M:%S%z"))
     mnightsi = which(t$sec==0 & t$min==0 & t$hour==0)
     day = rep(NA, times=nrow(S))
     d=1
