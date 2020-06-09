@@ -1,6 +1,9 @@
 step.metrics = function(datadir, outputdir="./", 
                         timestamp_colname = "timestamp", steps_colname = "steps",
-                        th.MOD=100, th.VIG=130){
+                        th.MOD=100, th.VIG=130, 
+                        includedaycrit = 10,
+                        exclude_pk30_0 = FALSE,
+                        exclude_pk60_0 = FALSE){
   
   print("Calculating features per day")
   
@@ -11,7 +14,7 @@ step.metrics = function(datadir, outputdir="./",
   
   #Loop through the files
   for (i in 1:length(files)) {
-    S=read.csv(paste0(datadir, files[i]))
+    S=read.csv(paste0(datadir, "/", files[i]))
     t = unclass(as.POSIXlt(S[,time]))
     mnightsi = which(t$sec==0 & t$min==0 & t$hour==0)
     day = rep(NA, times=nrow(S))
@@ -100,7 +103,8 @@ step.metrics = function(datadir, outputdir="./",
   
   files = dir(paste0(outputdir,"/daySummary"))
   
-  names.out.2 = c("id","start_date","th_MOD","th_VIG",
+  names.out.2 = c("id","start_date", "valid_days","valid_days_WD", "valid_days_WE",
+                  "th_MOD","th_VIG",
                   "stepsperday_pla","stepsperday_wei",
                   "CAD_pk60_spm_pla","CAD_pk60_spm_wei", "CAD_N0s_pk60_spm_pla", "CAD_N0s_pk60_spm_wei",
                   "CAD_pk30_spm_pla","CAD_pk30_spm_wei", "CAD_N0s_pk30_spm_pla", "CAD_N0s_pk30_spm_wei",
@@ -116,9 +120,22 @@ step.metrics = function(datadir, outputdir="./",
   #Loop through files to calculate mean variables
   for (i in 1:length(files)){
     D = read.csv(paste0(outputdir,"/daySummary/", files[i]))
+    exclude = sum(D$dur_day_min < includedaycrit * 60)
+    if(exclude > 0) D = D[-which(D$dur_day_min < includedaycrit * 60),]
+    if(exclude_pk30_0 == TRUE){
+      zeroes = sum(D$CAD_N0s_pk30_spm > 0)
+      if(zeroes > 0) D = D[-which(D$CAD_N0s_pk30_spm > 0),]
+    }
+    if(exclude_pk60_0 == TRUE){
+      zeroes = sum(D$CAD_N0s_pk60_spm > 0)
+      if(zeroes > 0) D = D[-which(D$CAD_N0s_pk60_spm > 0),]
+    }
     fi=1                                                  #fi is the column of the new output data frame
     output[i,fi] = files[i]; fi=fi+1
     output[i,fi] = D[1,"date"]; fi=fi+1
+    output[i,fi] = nrow(D); fi=fi+1
+    output[i,fi] = sum(D$wday_num < 6); fi=fi+1
+    output[i,fi] = sum(D$wday_num >= 6); fi=fi+1
     output[i,fi:(fi+1)] = c(th.MOD, th.VIG); fi=fi+2
     
     for (mi in 7:ncol(daily.out)){
