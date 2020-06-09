@@ -2,8 +2,8 @@ step.metrics = function(datadir, outputdir="./",
                         timestamp_colname = "timestamp", steps_colname = "steps",
                         th.MOD=100, th.VIG=130, 
                         includedaycrit = 10,
-                        exclude_pk30_0 = FALSE,
-                        exclude_pk60_0 = FALSE){
+                        exclude_pk30_0 = TRUE,
+                        exclude_pk60_0 = TRUE){
   
   print("Calculating features per day")
   
