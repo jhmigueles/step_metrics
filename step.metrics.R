@@ -100,7 +100,7 @@ step.metrics = function(datadir, outputdir="./",
   
   files = dir(paste0(outputdir,"/daySummary"))
   
-  names.out.2 = c("id","start_date","th_MOD","th_VIG",
+  names.out.2 = c("ID","start_date","th_MOD","th_VIG",
                   "stepsperday_pla","stepsperday_wei",
                   "CAD_pk60_spm_pla","CAD_pk60_spm_wei", "CAD_N0s_pk60_spm_pla", "CAD_N0s_pk60_spm_wei",
                   "CAD_pk30_spm_pla","CAD_pk30_spm_wei", "CAD_N0s_pk30_spm_pla", "CAD_N0s_pk30_spm_wei",
