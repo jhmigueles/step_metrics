@@ -23,8 +23,9 @@ step.metrics = function(datadir, outputdir="./",
   for (i in 1:length(files)) {
     S=read.csv(paste0(datadir, "/", files[i]))
     t = chartime2iso8601(S$timestamp)
-    t = unclass(as.POSIXlt(t, format="%Y-%m-%dT%H:%M:%S%z"))
-    mnightsi = which(t$sec==0 & t$min==0 & t$hour==0)
+    # t = unclass(as.POSIXlt(t, format="%Y-%m-%dT%H:%M:%S%z"))
+    # mnightsi = which(t$sec==0 & t$min==0 & t$hour==0)
+    mnightsi = grep("00:00:00", t, fixed = T)
     day = rep(NA, times=nrow(S))
     d=1
     #Loop through the rest of the days
