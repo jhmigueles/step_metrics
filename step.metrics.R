@@ -3,13 +3,14 @@ step.metrics = function(datadir, outputdir="./",
                         th.MOD=100, th.VIG=130, 
                         includedaycrit = 10,
                         exclude_pk30_0 = TRUE,
-                        exclude_pk60_0 = TRUE){
+                        exclude_pk60_0 = TRUE,
+                       date.format = "%m/%d/%Y T%H:%M:%S%p"){
   
   print("Calculating features per day")
   
   # Functions
   chartime2iso8601 = function(x,tz = ""){
-    POStime = as.POSIXlt(as.numeric(as.POSIXlt(x,tz)),origin="1970-1-1",tz)
+    POStime = as.POSIXlt(as.numeric(as.POSIXlt(x,tz), format = date.format),origin="1970-1-1",tz)
     POStimeISO = strftime(POStime,format="%Y-%m-%dT%H:%M:%S%z")
     return(POStimeISO)
   }
