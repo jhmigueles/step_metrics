@@ -4,7 +4,7 @@ step.metrics = function(datadir, outputdir="./",
                         includedaycrit = 10,
                         exclude_pk30_0 = TRUE,
                         exclude_pk60_0 = TRUE,
-                       date.format = "%m/%d/%Y T%H:%M:%S%p"){
+                       date.format = "%m/%d/%Y %I:%M:%S%p"){
   
   print("Calculating features per day")
   
