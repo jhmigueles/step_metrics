@@ -10,10 +10,11 @@ step.metrics = function(datadir, outputdir="./",
   
   # Functions
   chartime2iso8601 = function(x,tz = "", date.format = "%m/%d/%Y %I:%M:%S%p"){
-    POStime = as.POSIXlt(as.numeric(as.POSIXlt(x,tz, format = date.format)),origin="1970-1-1",tz)
+    POStime = as.POSIXlt(as.numeric(as.POSIXlt(x,tz, format = date.format)),origin="1970-01-01",tz)
     POStimeISO = strftime(POStime,format="%Y-%m-%dT%H:%M:%S%z")
     return(POStimeISO)
   }
+  
   
   #Names of the data files
   files = dir(datadir, pattern = "*.csv")
@@ -22,7 +23,7 @@ step.metrics = function(datadir, outputdir="./",
   
   #Loop through the files
   for (i in 1:length(files)) {
-    S=read.csv(paste0(datadir, "/", files[i]))
+    S = read.csv(paste0(datadir, "/", files[i]))
     t = chartime2iso8601(S$timestamp, date.format = date.format)
     # t = unclass(as.POSIXlt(t, format="%Y-%m-%dT%H:%M:%S%z"))
     # mnightsi = which(t$sec==0 & t$min==0 & t$hour==0)
@@ -35,6 +36,8 @@ step.metrics = function(datadir, outputdir="./",
       if (j < length(mnightsi)){
         if (j == 1 & mnightsi[j] > 1){
           day[1:mnightsi[j]] = d
+        } else if(j == 1 & mnightsi[j] == 1){
+          next()
         } else {
           day[mnightsi[j-1]:mnightsi[j]] = d
         }
@@ -50,7 +53,7 @@ step.metrics = function(datadir, outputdir="./",
     MPA = VPA = MVPA = NA
     for (di in 1:length(unique(day))){
       #Date
-      date[di] = strsplit(S[which(day==di)[1],1], " ")[[1]][1]
+      date[di] = strsplit(t[which(day==di)[1]], "T")[[1]][1]
       wday_num[di] = format(as.POSIXct(S[which(day==di)[1],1]),"%u")  
       #Duration of the day (number of minutes recorded)
       record.min[di] = length(S[which(day==di),steps])
