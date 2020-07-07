@@ -14,7 +14,6 @@ step.metrics = function(datadir, outputdir="./",
     return(POStimeISO)
   }
   
-  
   #Names of the data files
   files = dir(datadir, pattern = "*.csv")
   time = timestamp_colname
@@ -30,7 +29,6 @@ step.metrics = function(datadir, outputdir="./",
     day = rep(NA, times=nrow(S))
     d=1
     #Loop through the rest of the days
-    
     for(j in 1:length(mnightsi)){
       if (j < length(mnightsi)){
         if (j == 1 & mnightsi[j] > 1){
