@@ -3,18 +3,16 @@ step.metrics = function(datadir, outputdir="./",
                         th.MOD=100, th.VIG=130, 
                         includedaycrit = 10,
                         exclude_pk30_0 = TRUE,
-                        exclude_pk60_0 = TRUE,
-                        date.format = "%m/%d/%Y %I:%M:%S%p"){
+                        exclude_pk60_0 = TRUE){
   
   print("Calculating features per day")
   
   # Functions
-  chartime2iso8601 = function(x,tz = "", date.format = "%m/%d/%Y %I:%M:%S%p"){
-    POStime = as.POSIXlt(as.numeric(as.POSIXlt(x,tz, format = date.format)),origin="1970-01-01",tz)
+  chartime2iso8601 = function(x,tz = ""){
+    POStime = as.POSIXlt(as.numeric(as.POSIXlt(x,tz)),origin="1970-01-01",tz)
     POStimeISO = strftime(POStime,format="%Y-%m-%dT%H:%M:%S%z")
     return(POStimeISO)
   }
-  
   
   #Names of the data files
   files = dir(datadir, pattern = "*.csv")
@@ -24,14 +22,13 @@ step.metrics = function(datadir, outputdir="./",
   #Loop through the files
   for (i in 1:length(files)) {
     S = read.csv(paste0(datadir, "/", files[i]))
-    t = chartime2iso8601(S$timestamp, date.format = date.format)
+    t = chartime2iso8601(S$timestamp)
     # t = unclass(as.POSIXlt(t, format="%Y-%m-%dT%H:%M:%S%z"))
     # mnightsi = which(t$sec==0 & t$min==0 & t$hour==0)
     mnightsi = grep("00:00:00", t, fixed = T)
     day = rep(NA, times=nrow(S))
     d=1
     #Loop through the rest of the days
-    
     for(j in 1:length(mnightsi)){
       if (j < length(mnightsi)){
         if (j == 1 & mnightsi[j] > 1){
