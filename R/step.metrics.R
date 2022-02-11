@@ -7,9 +7,18 @@ step.metrics = function(datadir, outputdir="./",
   
   print("Calculating features per day")
   
+  # timeformats to try
+  timeFormats = c("%Y-%m-%d %H:%M:%OS",
+                  "%Y/%m/%d %H:%M:%OS",
+                  "%Y-%m-%d %H:%M",
+                  "%Y/%m/%d %H:%M",
+                  "%m/%d/%Y %H:%M",
+                  "%Y-%m-%d",
+                  "%Y/%m/%d")
+  
   # Functions
-  chartime2iso8601 = function(x,tz = ""){
-    POStime = as.POSIXlt(as.numeric(as.POSIXlt(x,tz)),origin="1970-01-01",tz)
+  chartime2iso8601 = function(x,tz = "", tryFormats = timeFormats){
+    POStime = as.POSIXlt(as.numeric(as.POSIXlt(x,tz, tryFormats = tryFormats)),origin="1970-01-01",tz)
     POStimeISO = strftime(POStime,format="%Y-%m-%dT%H:%M:%S%z")
     return(POStimeISO)
   }
@@ -51,7 +60,7 @@ step.metrics = function(datadir, outputdir="./",
     for (di in 1:length(unique(day))){
       #Date
       date[di] = strsplit(t[which(day==di)[1]], "T")[[1]][1]
-      wday_num[di] = format(as.POSIXct(S[which(day==di)[1],1]),"%u")  
+      wday_num[di] = format(as.POSIXct(S[which(day==di)[1],1], tryFormats = timeFormats),"%u")  
       #Duration of the day (number of minutes recorded)
       record.min[di] = length(S[which(day==di),steps])
       #Steps/day
