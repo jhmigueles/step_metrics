@@ -1,24 +1,33 @@
 step.metrics = function(datadir, outputdir="./", 
-                        timestamp_colname = "timestamp", steps_colname = "steps",
+                        timestamp_colname = "timestamp", 
+                        steps_colname = "steps",
                         th.MOD=100, th.VIG=130, 
                         includedaycrit = 10,
                         exclude_pk30_0 = TRUE,
-                        exclude_pk60_0 = TRUE){
+                        exclude_pk60_0 = TRUE,
+                        time_format = c()){
   
   print("Calculating features per day")
   
   # timeformats to try
-  timeFormats = c("%Y-%m-%d %H:%M:%OS",
+  if(is.null(time_format)) {
+    tryFormats = c("%Y-%m-%d %H:%M:%OS",
                   "%Y/%m/%d %H:%M:%OS",
                   "%Y-%m-%d %H:%M",
                   "%Y/%m/%d %H:%M",
                   "%m/%d/%Y %H:%M",
                   "%Y-%m-%d",
                   "%Y/%m/%d")
+  }
+  
   
   # Functions
-  chartime2iso8601 = function(x,tz = "", tryFormats = timeFormats){
-    POStime = as.POSIXlt(as.numeric(as.POSIXlt(x,tz, tryFormats = tryFormats)),origin="1970-01-01",tz)
+  chartime2iso8601 = function(x,tz = "", time_format = c()){
+    if(is.null(time_format)) {
+      POStime = as.POSIXlt(as.numeric(as.POSIXlt(x,tz, tryFormats = tryFormats)), origin = "1970-01-01", tz)
+    } else if(!is.null(time_format)) {
+      POStime = as.POSIXlt(as.numeric(as.POSIXlt(x,tz, format = time_format)), origin = "1970-01-01", tz)
+    }
     POStimeISO = strftime(POStime,format="%Y-%m-%dT%H:%M:%S%z")
     return(POStimeISO)
   }
@@ -31,7 +40,7 @@ step.metrics = function(datadir, outputdir="./",
   #Loop through the files
   for (i in 1:length(files)) {
     S = read.csv(paste0(datadir, "/", files[i]))
-    t = chartime2iso8601(S$timestamp)
+    t = chartime2iso8601(S$timestamp, time_format = time_format)
     # t = unclass(as.POSIXlt(t, format="%Y-%m-%dT%H:%M:%S%z"))
     # mnightsi = which(t$sec==0 & t$min==0 & t$hour==0)
     mnightsi = grep("00:00:00", t, fixed = T)
@@ -60,7 +69,11 @@ step.metrics = function(datadir, outputdir="./",
     for (di in 1:length(unique(day))){
       #Date
       date[di] = strsplit(t[which(day==di)[1]], "T")[[1]][1]
-      wday_num[di] = format(as.POSIXct(S[which(day==di)[1],1], tryFormats = timeFormats),"%u")  
+      if(is.null(time_format)) {
+        wday_num[di] = format(as.POSIXct(S[which(day==di)[1],1], tryFormats = timeFormats),"%u")  
+      } else if(!is.null(time_format)) {
+        wday_num[di] = format(as.POSIXct(S[which(day==di)[1],1], format = time_format),"%u")  
+      }
       #Duration of the day (number of minutes recorded)
       record.min[di] = length(S[which(day==di),steps])
       #Steps/day
